@@ -35,8 +35,15 @@ public class CategoriesController
     @PreAuthorize("permitAll()")
     public List<Category> getAll()
     {
-        // find and return all categories
-        return null;
+        try
+        {
+            return categoryDao.getAllCategories();
+        }
+        catch(Exception ex)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal sever error.");
+        }
+//        return null;
     }
 
     @GetMapping("{id}")
