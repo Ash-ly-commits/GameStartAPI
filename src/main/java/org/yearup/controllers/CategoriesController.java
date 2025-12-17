@@ -71,7 +71,11 @@ public class CategoriesController
     {
         try
         {
-            return productDao.listByCategoryId(categoryId);
+            List<Product> productsById = productDao.listByCategoryId(categoryId);
+            if (productsById.isEmpty()){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            return productsById;
         }
         catch(Exception ex)
         {
