@@ -29,6 +29,8 @@ public class CategoriesController
         this.categoryDao = categoryDao;
     }
 
+    // for each method below look between try catches & return nulls & what kind of error messages you'd get
+    // to decide best approach
     @GetMapping("")
     @PreAuthorize("permitAll()")
     public List<Category> getAll()
@@ -55,7 +57,6 @@ public class CategoriesController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal sever error.");
         }
         // return null;
-        // decide between try catches & return nulls & what kind of error messages you'd get.
     }
 
     // the url to return all products in category 1 would look like this
@@ -67,12 +68,19 @@ public class CategoriesController
         return null;
     }
 
-    @PostMapping
+    @PostMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Category addCategory(@RequestBody Category category)
     {
-        // insert the category
-        return null;
+        try
+        {
+            return categoryDao.create(category);
+        }
+        catch(Exception ex)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+        }
+        // return null;
     }
 
     @PutMapping("{id}")
