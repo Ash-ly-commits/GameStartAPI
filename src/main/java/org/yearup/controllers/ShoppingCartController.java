@@ -68,15 +68,14 @@ public class ShoppingCartController
 
 
     @PutMapping("products/{productId}")
-    public void updateShoppingCart(@PathVariable int productID, @RequestBody ShoppingCartItem shoppingCartItem,
-                                   Principal principal)
+    public void updateShoppingCart(@PathVariable int productId, Principal principal, @RequestBody ShoppingCartItem shoppingCartItem)
     {
         try{
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
 
-            shoppingCartDao.updateProduct(userId, productID, shoppingCartItem);
+            shoppingCartDao.updateProduct(productId, userId, shoppingCartItem);
         }
         catch(Exception e)
         {
