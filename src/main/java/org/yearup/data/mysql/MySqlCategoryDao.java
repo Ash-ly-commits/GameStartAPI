@@ -73,6 +73,15 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public Category create(Category category)
     {
+        // Checks for existing category of the same name
+        Category existing = getByName(category.getName());
+        if (existing != null)
+        {
+            throw new RuntimeException(
+                    "Category with name '" + category.getName() + "' already exists."
+            );
+        }
+
         String sql = "INSERT INTO categories(name, description) " +
                 " VALUES (?, ?);";
 
@@ -90,10 +99,10 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
 
                 if (generatedKeys.next()) {
                     // Retrieve the auto-incremented ID
-                    int orderId = generatedKeys.getInt(1);
+                    int categoryId = generatedKeys.getInt(1);
 
                     // get the newly inserted category
-                    return getById(orderId);
+                    return getById(categoryId);
                 }
             }
         }
@@ -162,4 +171,26 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
         return category;
     }
 
+    public Category getByName(String name)
+    {
+        String sql = "SELECT * FROM categories WHERE name = ?;";
+
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
+
+            ResultSet results = statement.executeQuery();
+
+            if (results.next())
+            {
+                return mapRow(results);
+            }
+        }
+        catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
 }
