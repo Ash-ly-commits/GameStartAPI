@@ -13,6 +13,7 @@ import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
 import java.security.Principal;
+import java.sql.SQLException;
 
 @RestController
 @RequestMapping("shopping_cart")
@@ -41,9 +42,7 @@ public class ShoppingCartController
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
 
-
-            // use the shoppingcartDao to get all items in the cart and return the cart
-//            return shoppingCartDao.getByUserId(userId); i assume lol
+            return shoppingCartDao.getByUserId(userId);
         }
         catch(Exception e)
         {
@@ -51,25 +50,59 @@ public class ShoppingCartController
         }
     }
 
-    // add a POST method to add a product to the cart
     @PostMapping("products/{productId}")
-    public void addProduct(@PathVariable int productId, Principal principal){
+    public void addProduct(@PathVariable int productId, Principal principal)
+    {
+        try{
+            String userName = principal.getName();
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
 
+            shoppingCartDao.addProduct(userId, productId);
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+        }
     }
 
 
-    // add a PUT method to update an existing product in the cart
     @PutMapping("products/{productId}")
     public void updateShoppingCart(@PathVariable int productID, @RequestBody ShoppingCartItem shoppingCartItem,
-                                   Principal principal){
+                                   Principal principal)
+    {
+        try{
+            String userName = principal.getName();
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
 
+            shoppingCartDao.updateProduct(userId, productID, shoppingCartItem);
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+        }
     }
 
 
-    // add a DELETE method to clear all products from the current users cart
     @DeleteMapping
     public void clearCart(Principal principal){
+        try{
+            String userName = principal.getName();
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
 
+            var cart = shoppingCartDao.getByUserId(userId);
+
+            if(cart == null)
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+            shoppingCartDao.clearCart(userId);
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+        }
     }
 
 }

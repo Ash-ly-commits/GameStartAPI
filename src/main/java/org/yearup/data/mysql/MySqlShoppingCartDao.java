@@ -36,7 +36,8 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
             p.stock,
             p.featured,
             p.image_url,
-            sc.quantity
+            sc.quantity,
+            sc.discount_percent
         FROM shopping_cart sc
         JOIN products p ON sc.product_id = p.product_id
         WHERE sc.user_id = ?;
@@ -55,6 +56,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
                 ShoppingCartItem item = new ShoppingCartItem();
                 item.setProduct(product);
                 item.setQuantity(results.getInt("quantity"));
+                item.setDiscountPercent(results.getBigDecimal("discount_percent"));
 
                 cart.add(item);
             }
@@ -70,25 +72,48 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
     @Override
     public void addProduct(int userId, int productId)
     {
-        String sql = "INSERT INTO shopping_cart(userId, productId)" +
-                "VALUES (?, ?);";
+        String checkSql = " SELECT quantity " +
+                " FROM shopping_cart " +
+                " WHERE user_id = ? AND product_id = ?; ";
 
-        try(Connection connection = getConnection())
+        String insertSql = "INSERT INTO shopping_cart(user_id, product_id, quantity, discount_percent) " +
+                " VALUES (?, ?, 1, 0); ";
+
+        String updateSql = "UPDATE shopping_cart " +
+                " SET quantity = quantity + 1 " +
+                " WHERE user_id = ? AND product_id = ?; ";
+
+        try (Connection connection = getConnection())
         {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, userId);
-            statement.setInt(2, productId);
+            PreparedStatement checkStmt = connection.prepareStatement(checkSql);
+            checkStmt.setInt(1, userId);
+            checkStmt.setInt(2, productId);
 
-            statement.executeUpdate();
+            ResultSet rs = checkStmt.executeQuery();
 
-        }catch (SQLException e)
+            if (rs.next())
+            {
+                PreparedStatement updateStmt = connection.prepareStatement(updateSql);
+                updateStmt.setInt(1, userId);
+                updateStmt.setInt(2, productId);
+                updateStmt.executeUpdate();
+            }
+            else
+            {
+                PreparedStatement insertStmt = connection.prepareStatement(insertSql);
+                insertStmt.setInt(1, userId);
+                insertStmt.setInt(2, productId);
+                insertStmt.executeUpdate();
+            }
+        }
+        catch (SQLException e)
         {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void updateProduct(int userId, int productId, int quantity)
+    public void updateProduct(int userId, int productID, ShoppingCartItem shoppingCartItem)
     {
         String sql = "UPDATE shopping_cart" +
                 " SET quantity = ? " +
@@ -97,9 +122,9 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         try(Connection connection = getConnection())
         {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, quantity);
+            statement.setInt(1, shoppingCartItem.getQuantity());
             statement.setInt(2, userId);
-            statement.setInt(3, productId);
+            statement.setInt(3, productID);
 
             statement.executeUpdate();
 
