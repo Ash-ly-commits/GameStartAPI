@@ -17,7 +17,8 @@ import java.security.Principal;
 @RestController
 @RequestMapping("shopping_cart")
 @PreAuthorize("isAuthenticated()")
-public class ShoppingCartController {
+public class ShoppingCartController
+{
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
     private ProductDao productDao;
