@@ -13,7 +13,6 @@ import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
 import java.security.Principal;
-import java.sql.SQLException;
 
 @RestController
 @RequestMapping("shopping_cart")
@@ -36,9 +35,7 @@ public class ShoppingCartController
     {
         try
         {
-            // get the currently logged in username
             String userName = principal.getName();
-            // find database user by userId
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
 

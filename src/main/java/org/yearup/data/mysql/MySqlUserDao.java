@@ -87,8 +87,7 @@ public class MySqlUserDao extends MySqlDaoBase implements UserDao
 
             if(row.next())
             {
-                User user = mapRow(row);
-                return user;
+                return mapRow(row);
             }
         }
         catch (SQLException e)
@@ -114,8 +113,7 @@ public class MySqlUserDao extends MySqlDaoBase implements UserDao
             if(row.next())
             {
 
-                User user = mapRow(row);
-                return user;
+                return mapRow(row);
             }
         }
         catch (SQLException e)
