@@ -1,4 +1,4 @@
-# YearUp E-Commerce Backend API
+# E-Commerce Backend API
 
 This project is a **Spring Boot RESTful API** that powers the backend of an e-commerce application. It provides endpoints for authentication, product browsing, category management, shopping cart functionality, user profiles, and order checkout, backed by a **MySQL database** and secured with **JWT-based authentication**.
 
@@ -50,7 +50,7 @@ This project is a **Spring Boot RESTful API** that powers the backend of an e-co
 ## 📂 Project Structure
 
 ```
-org.yearup
+org
 ├── controllers        # REST controllers
 ├── data               # DAO interfaces
 │   └── mysql          # MySQL DAO implementations
