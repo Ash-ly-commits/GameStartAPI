@@ -1,32 +1,43 @@
 package org.yearup.controllers;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.ProfileDao;
+import org.yearup.data.UserDao;
 import org.yearup.models.Profile;
+import org.yearup.models.User;
 
-import java.util.List;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("profiles")
+@PreAuthorize("isAuthenticated()")
 public class ProfileController
 {
     private ProfileDao profileDao;
+    private UserDao userDao;
 
     @Autowired
-    public ProfileController(ProfileDao profileDao){ this.profileDao = profileDao; }
+    public ProfileController(ProfileDao profileDao, UserDao userDao)
+    {
+        this.profileDao = profileDao;
+        this.userDao = userDao;
+    }
 
-    @GetMapping("{userId}")
-    public List<Profile> getByUserId(@PathVariable int userId)
+    @GetMapping
+    public Profile getByUserId(Principal principal)
     {
         try
         {
-            var profile = profileDao.getByUserId(userId);
+            String userName = principal.getName();
+            User user = userDao.getByUserName(userName);
 
-            if(profile.isEmpty())
+            Profile profile = profileDao.getByUserId(user.getId());
+
+            if(profile == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
             return profile;
@@ -38,10 +49,16 @@ public class ProfileController
     }
 
     @PutMapping
-    public void updateProfile(@RequestBody Profile profile)
+    public void updateProfile(@RequestBody Profile profile, Principal principal)
     {
         try
         {
+            String username = principal.getName();
+            User user = userDao.getByUserName(username);
+
+            // ensures user can only update their own profile!!!
+            profile.setUserId(user.getId());
+
             profileDao.update(profile);
         }
         catch(Exception e)
