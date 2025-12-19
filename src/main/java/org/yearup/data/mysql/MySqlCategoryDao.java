@@ -43,7 +43,6 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
             throw new RuntimeException(e);
         }
         return categories;
-//        return null;
     }
 
     @Override
