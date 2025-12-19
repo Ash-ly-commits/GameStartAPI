@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("categories")
 @CrossOrigin
-
 public class CategoriesController
 {
     private CategoryDao categoryDao;
@@ -36,9 +35,9 @@ public class CategoriesController
         {
             return categoryDao.getAllCategories();
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -61,7 +60,7 @@ public class CategoriesController
         }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -76,9 +75,9 @@ public class CategoriesController
             }
             return productsById;
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -90,9 +89,9 @@ public class CategoriesController
         {
             return categoryDao.create(category);
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -104,9 +103,9 @@ public class CategoriesController
         {
             categoryDao.update(id, category);
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -123,9 +122,13 @@ public class CategoriesController
 
             categoryDao.delete(id);
         }
-        catch(Exception ex)
+        catch(ResponseStatusException e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw e;
+        }
+        catch(Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -12,6 +12,7 @@ import org.yearup.models.User;
 
 import java.security.Principal;
 
+@CrossOrigin
 @RestController
 @RequestMapping("profiles")
 @PreAuthorize("isAuthenticated()")
@@ -42,9 +43,13 @@ public class ProfileController
 
             return profile;
         }
+        catch(ResponseStatusException e)
+        {
+            throw e;
+        }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -63,7 +68,7 @@ public class ProfileController
         }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

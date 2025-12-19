@@ -14,6 +14,7 @@ import org.yearup.models.User;
 
 import java.security.Principal;
 
+@CrossOrigin(origins = "http://localhost:63342")
 @RestController
 @RequestMapping("shopping_cart")
 @PreAuthorize("isAuthenticated()")
@@ -43,12 +44,12 @@ public class ShoppingCartController
         }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("products/{productId}")
-    public void addProduct(@PathVariable int productId, Principal principal)
+    public ShoppingCart addProduct(@PathVariable int productId, Principal principal)
     {
         try{
             String userName = principal.getName();
@@ -56,16 +57,18 @@ public class ShoppingCartController
             int userId = user.getId();
 
             shoppingCartDao.addProduct(userId, productId);
+            return shoppingCartDao.getByUserId(user.getId());
         }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
     @PutMapping("products/{productId}")
-    public void updateShoppingCart(@PathVariable int productId, Principal principal, @RequestBody ShoppingCartItem shoppingCartItem)
+    public void updateShoppingCart(@PathVariable int productId, Principal principal,
+                                   @RequestBody ShoppingCartItem shoppingCartItem)
     {
         try{
             String userName = principal.getName();
@@ -76,7 +79,7 @@ public class ShoppingCartController
         }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -95,9 +98,13 @@ public class ShoppingCartController
 
             shoppingCartDao.clearCart(userId);
         }
+        catch(ResponseStatusException e)
+        {
+            throw e;
+        }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

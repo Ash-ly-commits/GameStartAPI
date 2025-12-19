@@ -85,10 +85,14 @@ public class OrdersController
 
             shoppingCartDao.clearCart(user.getId());
         }
+        catch(ResponseStatusException e)
+        {
+            throw e;
+        }
         catch (Exception e)
         {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "Checkout failed..... soz"
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Checkout failed...."
             );
         }
     }

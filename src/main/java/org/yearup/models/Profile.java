@@ -16,7 +16,8 @@ public class Profile
     {
     }
 
-    public Profile(int userId, String firstName, String lastName, String phone, String email, String address, String city, String state, String zip)
+    public Profile(int userId, String firstName, String lastName, String phone, String email, String address,
+                   String city, String state, String zip)
     {
         this.userId = userId;
         this.firstName = firstName;
