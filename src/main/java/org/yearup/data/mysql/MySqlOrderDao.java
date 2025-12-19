@@ -53,7 +53,7 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao
         String sql = " INSERT INTO order_line_items(order_id, product_id, sales_price, quantity, discount) " +
                 " VALUES (?, ?, ?, ?, ?); ";
 
-        try (Connection connection = getConnection();)
+        try (Connection connection = getConnection())
         {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, item.getOrderId());

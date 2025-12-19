@@ -37,7 +37,6 @@ public class OrdersController
         this.profileDao = profileDao;
     }
 
-    // POST http://localhost:8080/orders
     @PostMapping
     public void checkout(Principal principal)
     {
@@ -45,29 +44,25 @@ public class OrdersController
         {
             String username = principal.getName();
             User user = userDao.getByUserName(username);
-            int userId = user.getId();
 
-            ShoppingCart cart = shoppingCartDao.getByUserId(userId);
+            ShoppingCart cart = shoppingCartDao.getByUserId(user.getId());
             if (cart.getItems().isEmpty())
             {
                 throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Shopping cart is empty"
+                        HttpStatus.BAD_REQUEST, "Shopping cart is empty..."
                 );
             }
 
-//            Profile profile = profileDao.getByUserId(userId); okay lowk gotta change what getByUserId returns,
-//            can one user make multiple profiles??
+            Profile profile = profileDao.getByUserId(user.getId());
             if (profile == null)
             {
                 throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "User profile not found"
+                        HttpStatus.BAD_REQUEST, "User profile not found"
                 );
             }
 
             Order order = new Order();
-            order.setUserId(userId);
+            order.setUserId(user.getId());
             order.setShippingAmount(BigDecimal.ZERO);
             order.setAddress(profile.getAddress());
             order.setCity(profile.getCity());
@@ -88,17 +83,12 @@ public class OrdersController
                 orderDao.addLineItem(lineItem);
             }
 
-            shoppingCartDao.clearCart(userId);
-        }
-        catch (ResponseStatusException e)
-        {
-            throw e;
+            shoppingCartDao.clearCart(user.getId());
         }
         catch (Exception e)
         {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Checkout failed..... soz"
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Checkout failed..... soz"
             );
         }
     }
